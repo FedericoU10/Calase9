@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<script src="main.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cultiva en Casa — Huerta de Lechuga</title>
+
+    <!-- ESTILOS INTEGRADOS DE CULTIVA EN CASA -->
+    <style>
+        /* 1. VARIABLES GLOBALES Y PALETA DE COLORES */
+        :root {
+            --verde-bosque: #1B4332;
+            --verde-eco: #E8F5E9;
+            --blanco-natural: #FFFFFF;
+            --texto-oscuro: #111111;
+            --gris-suave: #EAECEB;
+            --gris-borde: #E0E0E0;
+
+            --azul-optimo: #2B6CB0;
+            --azul-oscuro: #1A202C;
+            --azul-rio: #319795;
+            --naranja-sequia: #ED8936;
+            --verde-lima: #48BB78;
+            --rojo-alerta: #C53030;
+
+            --fuente-principal: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --sombra-tarjeta: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --sombra-header: 0 2px 8px rgba(0, 0, 0, 0.15);
+            --transicion-suave: all 0.3s ease;
+        }
+
+        /* 2. REGLAS BASE Y CONTENEDOR CENTRADO */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--fuente-principal);
+            background-color: var(--gris-suave);
+            color: var(--texto-oscuro);
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* Marco global agrupado estilo móvil */
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: var(--verde-eco);
+            min-height: 100vh;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #contenido-principal {
+            padding: 16px;
+            flex: 1;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        /* 3. CABECERA Y MENÚ DESPLEGABLE */
+        .smart-header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background-color: var(--verde-bosque);
+            color: var(--blanco-natural);
+            z-index: 1000;
+            box-shadow: var(--sombra-header);
+        }
+
+        .header-contenido {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+        }
+
+        .identidad h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--blanco-natural);
+        }
+
+        .identidad p {
+            font-size: 0.75rem;
+            opacity: 0.85;
+        }
+
+        .estado-conexion {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .estado-conexion.en-linea { color: #81E6D9; }
+        .estado-conexion.desconectado { color: #FEB2B2; }
+
+        /* Icono Hamburguesa en el CSS */
+        .btn-hamburguesa {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px;
+        }
+
+        .linea-hamburguesa {
+            width: 24px;
+            height: 3px;
+            background-color: var(--blanco-natural);
+            border-radius: 2px;
+            transition: var(--transicion-suave);
+        }
+
+        .menu-desplegable {
+            max-height: 0;
+            overflow: hidden;
+            background-color: var(--verde-bosque);
+            transition: max-height 0.4s ease-in-out;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-desplegable.abierto {
+            max-height: 250px;
+        }
+
+        .lista-menu {
+            list-style: none;
+            padding: 8px 16px 16px 16px;
+        }
+
+        .lista-menu li {
+            margin-bottom: 6px;
+        }
+
+        .enlace-menu {
+            color: var(--blanco-natural);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: var(--transicion-suave);
+        }
+
+        .enlace-menu:hover,
+        .enlace-menu:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            outline: none;
+        }
+
+        /* 4. SECCIONES Y TARJETAS SEPARADAS */
+        .seccion-spa {
+            margin-bottom: 24px;
+        }
+
+        .seccion-spa h2 {
+            font-size: 1.1rem;
+            color: var(--verde-bosque);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .tarjeta-medidor,
+        .tarjeta-control,
+        .tarjeta-grafica,
+        .tarjeta-info,
+        .tarjeta-formulario,
+        .tarjeta-beta {
+            background-color: var(--blanco-natural);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: var(--sombra-tarjeta);
+        }
+
+        .tarjeta-medidor h3,
+        .tarjeta-control h3,
+        .tarjeta-formulario h3,
+        .tarjeta-beta h3 {
+            font-size: 1rem;
+            color: var(--verde-bosque);
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        /* 5. MEDIDORES SEMICIRCULARES */
+        .contenedor-donuts {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .grafico-dona {
+            width: 180px;
+            height: 90px;
+            position: relative;
+            border-top-left-radius: 90px;
+            border-top-right-radius: 90px;
+            overflow: hidden;
+        }
+
+        .dona-humedad {
+            background: conic-gradient(
+                from 270deg at 50% 100%,
+                var(--naranja-sequia) 0deg 60deg,
+                var(--azul-optimo) 60deg 140deg,
+                var(--azul-oscuro) 140deg 180deg
+            );
+        }
+
+        .dona-temperatura {
+            background: conic-gradient(
+                from 270deg at 50% 100%,
+                var(--azul-rio) 0deg 50deg,
+                var(--verde-lima) 50deg 130deg,
+                var(--rojo-alerta) 130deg 180deg
+            );
+        }
+
+        .grafico-dona::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            width: 140px;
+            height: 70px;
+            background-color: var(--blanco-natural);
+            border-top-left-radius: 70px;
+            border-top-right-radius: 70px;
+        }
+
+        .aguja-indicador {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            height: 75px;
+            background-color: var(--texto-oscuro);
+            border-radius: 4px;
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(0deg);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .lectura-valor {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--verde-bosque);
+            margin-top: 8px;
+        }
+
+        /* 6. CONTROLES Y ELEMENTOS INTERACTIVOS */
+        .btn-accion-riego {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--verde-bosque);
+            color: var(--blanco-natural);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--sombra-tarjeta);
+            transition: var(--transicion-suave);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-accion-riego:active,
+        .btn-accion-riego:focus {
+            transform: scale(0.98);
+            background-color: #112A1F;
+            outline: 2px solid var(--verde-lima);
+        }
+
+        .conmutador-modo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .input-switch {
+            width: 44px;
+            height: 24px;
+            appearance: none;
+            background-color: #CBD5E0;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: var(--transicion-suave);
+        }
+
+        .input-switch:checked {
+            background-color: var(--verde-lima);
+        }
+
+        .input-switch::before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--blanco-natural);
+            top: 2px;
+            left: 2px;
+            transition: var(--transicion-suave);
+        }
+
+        .input-switch:checked::before {
+            transform: translateX(20px);
+        }
+
+        /* Pestanas de tiempo */
+        .selector-pestañas {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .btn-tab {
+            flex: 1;
+            padding: 8px 4px;
+            border: 1px solid var(--gris-borde);
+            background-color: var(--gris-suave);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-tab.activa {
+            background-color: var(--verde-bosque);
+            color: var(--blanco-natural);
+            border-color: var(--verde-bosque);
+        }
+
+        /* 7. FORMULARIOS Y BOTONES BETA */
+        .formulario-ux {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .grupo-pregunta {
+            border: none;
+        }
+
+        .grupo-pregunta legend {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .opciones-radio {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--gris-suave);
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+
+        .desplegable-nps {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--gris-borde);
+            background-color: var(--blanco-natural);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .botones-beta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-beta {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-beta.sequia { background-color: #FEEBC8; color: #9C4221; }
+        .btn-beta.encharcamiento { background-color: #EBF8FF; color: #2C5282; }
+        .btn-beta.lectura { background-color: #E2E8F0; color: #4A5568; }
+
+        /* 8. PIE DE PÁGINA DESTACADO */
+        .pie-pagina {
+            background-color: var(--verde-bosque);
+            color: var(--blanco-natural);
+            padding: 24px 16px;
+            text-align: center;
+            font-size: 0.8rem;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .contenido-footer p {
+            margin-bottom: 8px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .enlace-retorno {
+            color: #81E6D9;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 14px;
+            border: 1px solid #81E6D9;
+            border-radius: 8px;
+            transition: var(--transicion-suave);
+        }
+
+        .enlace-retorno:hover,
+        .enlace-retorno:focus {
+            background-color: rgba(129, 230, 217, 0.15);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CONTENEDOR GLOBAL (Marco Celular Centrado) -->
+    <div id="app-container">
+
+        <!-- CABECERA PEGAJOSA -->
+        <header id="header" class="smart-header">
+            <div class="header-contenido">
+                <div class="identidad">
+                    <h1>Cultiva en Casa</h1>
+                    <p>Huerta de Lechuga (12 m²)</p>
+                </div>
+
+                <!-- Estado Wi-Fi -->
+                <div id="estado-wifi" class="estado-conexion en-linea" role="status" aria-live="polite">
+                    <span class="icono-wifi" aria-hidden="true">📶</span>
+                    <span id="texto-wifi" class="texto-conexion">Sensores: En línea</span>
+                </div>
+
+                <!-- Botón Menú Hamburguesa (3 Líneas Blancas) -->
+                <button id="btn-menu" class="btn-hamburguesa" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="menu-navegacion">
+                    <span class="linea-hamburguesa"></span>
+                    <span class="linea-hamburguesa"></span>
+                    <span class="linea-hamburguesa"></span>
+                </button>
+            </div>
+
+            <!-- MENÚ DESPLEGABLE -->
+            <nav id="menu-navegacion" class="menu-desplegable" aria-hidden="true">
+                <ul class="lista-menu">
+                    <li><a href="#dashboard" class="enlace-menu">🏠 Inicio (Dashboard)</a></li>
+                    <li><a href="#estadisticas" class="enlace-menu">📊 Estadísticas Diarias</a></li>
+                    <li><a href="#recomendaciones" class="enlace-menu">📖 Recomendaciones de Cuidado</a></li>
+                    <li><a href="#evaluacion-beta" class="enlace-menu">🧪 Evaluación UX & Módulo Beta</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main id="contenido-principal">
+
+            <!-- BLOQUE 1: DASHBOARD DE MONITOREO -->
+            <section id="dashboard" class="seccion-spa">
+                <h2>Panel de Monitoreo en Tiempo Real</h2>
+
+                <!-- Medidor 1: Humedad del Suelo -->
+                <article id="metrica-humedad" class="tarjeta-medidor">
+                    <h3>Humedad del Suelo</h3>
+                    
+                    <figure class="contenedor-donuts">
+                        <div class="grafico-dona dona-humedad">
+                            <div id="aguja-humedad" class="aguja-indicador"></div>
+                        </div>
+                        <p class="lectura-valor"><span id="val-humedad">65</span>% <span class="icono-metrica" aria-hidden="true">💧</span></p>
+                        <figcaption class="sr-only">Humedad del suelo actual: 65%. Estado Óptimo.</figcaption>
+                    </figure>
+
+                    <div id="alerta-humedad" class="alerta-contenedor oculta" role="alert" aria-live="assertive"></div>
+                </article>
+
+                <!-- Medidor 2: Temperatura Ambiental -->
+                <article id="metrica-temperatura" class="tarjeta-medidor">
+                    <h3>Temperatura Ambiental</h3>
+                    
+                    <figure class="contenedor-donuts">
+                        <div class="grafico-dona dona-temperatura">
+                            <div id="aguja-temperatura" class="aguja-indicador"></div>
+                        </div>
+                        <p class="lectura-valor"><span id="val-temperatura">21.5</span> °C <span class="icono-metrica" aria-hidden="true">🌡️</span></p>
+                        <figcaption class="sr-only">Temperatura ambiental actual: 21.5°C. Estado Óptimo.</figcaption>
+                    </figure>
+                </article>
+
+                <!-- Control de Riego -->
+                <article id="panel-riego" class="tarjeta-control">
+                    <h3>Control de Riego</h3>
+                    <button id="btn-riego" class="btn-accion-riego" aria-pressed="false">
+                        <span class="icono-btn" aria-hidden="true">🚿</span> Activar Riego Manual
+                    </button>
+
+                    <div class="conmutador-modo">
+                        <label for="switch-modo" class="label-switch">Riego Automatizado:</label>
+                        <input type="checkbox" id="switch-modo" class="input-switch" checked>
+                    </div>
+                </article>
+            </section>
+
+            <!-- BLOQUE 2: ANÁLISIS HISTÓRICO -->
+            <section id="estadisticas" class="seccion-spa">
+                <h2>Estadísticas Diarias del Cultivo</h2>
+                
+                <article class="tarjeta-grafica">
+                    <div id="filtros-tiempo" class="selector-pestañas" role="tablist" aria-label="Filtros temporales">
+                        <button class="btn-tab activa" role="tab" aria-selected="true">Diario</button>
+                        <button class="btn-tab" role="tab" aria-selected="false">Semanal</button>
+                        <button class="btn-tab" role="tab" aria-selected="false">Mensual</button>
+                        <button class="btn-tab" role="tab" aria-selected="false">Anual</button>
+                    </div>
+
+                    <figure class="contenedor-canvas">
+                        <canvas id="grafico-lineas" role="img" aria-label="Gráfica de líneas de humedad y temperatura."></canvas>
+                        <figcaption class="leyenda-grafica" style="text-align: center; margin-top: 8px; font-size: 0.85rem;">Comportamiento en rango óptimo.</figcaption>
+                    </figure>
+                </article>
+            </section>
+
+            <!-- BLOQUE 3: RECOMENDACIONES -->
+            <section id="recomendaciones" class="seccion-spa">
+                <h2>Guía de Buenas Prácticas</h2>
+
+                <article class="tarjeta-info">
+                    <h4>💧 Rango Hídrico (Lechuga)</h4>
+                    <p>Mantener la humedad entre el <strong>60% y 80%</strong>. Cifras bajo 30% marchitan la planta; sobre 85% pudren la raíz.</p>
+                </article>
+
+                <article class="tarjeta-info">
+                    <h4>🌡️ Control Térmico</h4>
+                    <p>Rango óptimo: <strong>18°C a 24°C</strong>. Temperaturas superiores a 30°C amargan las hojas.</p>
+                </article>
+
+                <article class="tarjeta-info">
+                    <h4>🌿 Micro-aspersión (12 m²)</h4>
+                    <p>Pulsos breves de 3 a 5 minutos para evitar la saturación del sustrato en entornos cerrados.</p>
+                </article>
+            </section>
+
+            <!-- BLOQUE 4: EVALUACIÓN UX Y MÓDULO BETA -->
+            <section id="evaluacion-beta" class="seccion-spa">
+                <h2>Evaluación UX y Módulo Beta</h2>
+
+                <article class="tarjeta-formulario">
+                    <h3>Encuesta Likert (1 a 5)</h3>
+                    <form id="form-likert" class="formulario-ux">
+                        <fieldset class="grupo-pregunta">
+                            <legend>1. ¿Facilidad de lectura de los medidores?</legend>
+                            <div class="opciones-radio">
+                                <label><input type="radio" name="p1" value="1"> 1</label>
+                                <label><input type="radio" name="p1" value="2"> 2</label>
+                                <label><input type="radio" name="p1" value="3"> 3</label>
+                                <label><input type="radio" name="p1" value="4"> 4</label>
+                                <label><input type="radio" name="p1" value="5" checked> 5</label>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="grupo-pregunta">
+                            <legend>2. ¿Intuitividad del riego manual?</legend>
+                            <div class="opciones-radio">
+                                <label><input type="radio" name="p2" value="1"> 1</label>
+                                <label><input type="radio" name="p2" value="2"> 2</label>
+                                <label><input type="radio" name="p2" value="3"> 3</label>
+                                <label><input type="radio" name="p2" value="4"> 4</label>
+                                <label><input type="radio" name="p2" value="5" checked> 5</label>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="grupo-pregunta">
+                            <legend>3. ¿Claridad de las alertas?</legend>
+                            <div class="opciones-radio">
+                                <label><input type="radio" name="p3" value="1"> 1</label>
+                                <label><input type="radio" name="p3" value="2"> 2</label>
+                                <label><input type="radio" name="p3" value="3"> 3</label>
+                                <label><input type="radio" name="p3" value="4"> 4</label>
+                                <label><input type="radio" name="p3" value="5" checked> 5</label>
+                            </div>
+                        </fieldset>
+                    </form>
+                </article>
+
+                <article class="tarjeta-formulario">
+                    <h3>Net Promoter Score (NPS)</h3>
+                    <form id="form-nps" class="formulario-ux">
+                        <label for="select-nps">¿Recomendarías "Cultiva en Casa"?</label>
+                        <select id="select-nps" name="nps_score" class="desplegable-nps">
+                            <option value="" disabled selected>Selecciona puntuación (0 a 10)</option>
+                            <option value="0">0 — Improbable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5 — Neutral</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10 — Muy probable</option>
+                        </select>
+                    </form>
+                </article>
+
+                <article id="panel-beta" class="tarjeta-beta">
+                    <h3>Simulador de Excepciones (Beta)</h3>
+                    <p class="descriptivo-beta" style="font-size: 0.85rem; margin-bottom: 8px;">Botones de prueba para evaluación docente:</p>
+                    <div class="botones-beta">
+                        <button id="btn-simular-sequia" class="btn-beta sequia">Forzar Sequía (25%)</button>
+                        <button id="btn-simular-encharcamiento" class="btn-beta encharcamiento">Forzar Encharcamiento (90%)</button>
+                        <button id="btn-simular-reconexion" class="btn-beta lectura">Simular Lectura de Sensores (30s)</button>
+                    </div>
+                </article>
+            </section>
+
+        </main>
+
+        <!-- PIE DE PÁGINA VERDE BOSQUE DESTACADO -->
+        <footer id="footer-principal" class="pie-pagina">
+            <div class="contenido-footer">
+                <p class="ficha-tecnica"><strong>Especificaciones:</strong> Huerta cerrada de 12 m² | Cultivo: Lechuga | Hardware: ESP32 / Arduino (Emulado)</p>
+                <p class="creditos">Desarrollado por: <strong>Federico Moreno Villamizar</strong> — Asignatura: Diseño en Ingeniería — Universidad Libre (2026)</p>
+                <a href="#header" class="enlace-retorno">⬆️ Volver al inicio</a>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>
